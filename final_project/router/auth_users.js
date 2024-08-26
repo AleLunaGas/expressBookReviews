@@ -69,21 +69,31 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
    
   books[isbn]['reviews'][user] = review;
 
-  //let userRev = Object.keys(book["reviews"]);
-  //let revExists = False;
-//   for( i = 0; i < userRev.length; i++){
-//     if (user == userRev[i]){
-//         revExists = True;
-//     }
-//   }
-
-//   if (revExists){
-//     book["review"][user] = review;
-//   } else {
-//     book
-//   }
   
   return res.status(300).json({message: "Added or updated review"});
+});
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    const isbn = req.params.isbn;
+    const user = req.session.authorization.username;
+    const userRev = Object.keys(books[isbn]['reviews']); 
+    
+    let revExists = false;
+    for( i = 0; i < userRev.length; i++){
+        if (user == userRev[i]){
+            revExists = true;
+        }
+    }
+
+    if (revExists){
+        console.log(books[isbn]["reviews"][user]);
+        delete books[isbn]["reviews"][user];
+        res.send(`Book review for ${user} has been deleted`);
+    } else {
+        res.send(`Book review for ${user} does not exist`);
+    }
+  
+
 });
 
 module.exports.authenticated = regd_users;
